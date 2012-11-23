@@ -92,6 +92,7 @@ class openstack::controller (
   $mysql_account_security  = true,
   $mysql_bind_address      = '0.0.0.0',
   $allowed_hosts           = '%',
+  $manage_mysql_service    = true,
   # Keystone
   $keystone_db_user        = 'keystone',
   $keystone_db_dbname      = 'keystone',
@@ -185,6 +186,7 @@ class openstack::controller (
       quantum_db_password    => $quantum_db_password,
       quantum_db_dbname      => $quantum_db_dbname,
       allowed_hosts          => $allowed_hosts,
+      manage_mysql_service   => $manage_mysql_service,
       enabled                => $enabled,
     }
   } else {

@@ -60,16 +60,18 @@ class openstack::db::mysql (
     $quantum_db_user        = 'quantum',
     $quantum_db_dbname      = 'quantum',
     $allowed_hosts          = false,
+    $manage_mysql_service   = true,
     $enabled                = true
 ) {
 
   # Install and configure MySQL Server
   class { 'mysql::server':
-    config_hash => {
+    config_hash    => {
       'root_password' => $mysql_root_password,
       'bind_address'  => $mysql_bind_address,
     },
-    enabled     => $enabled,
+    enabled        => $enabled,
+    manage_service => $manage_mysql_service
   }
 
   # This removes default users and guest access
