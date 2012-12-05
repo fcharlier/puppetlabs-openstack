@@ -55,6 +55,7 @@ class openstack::nova::controller (
   $rabbit_user               = 'nova',
   $rabbit_virtual_host       = '/',
   $manage_rabbit_service     = true,
+  $rabbit_env_config         = 'UNSET',
   # Database
   $db_type                   = 'mysql',
   # Glance
@@ -90,7 +91,8 @@ class openstack::nova::controller (
     password       => $rabbit_password,
     enabled        => $enabled,
     virtual_host   => $rabbit_virtual_host,
-    manage_service => $manage_rabbit_service
+    manage_service => $manage_rabbit_service,
+    env_config     => $rabbit_env_config
   }
 
   # Configure Nova
