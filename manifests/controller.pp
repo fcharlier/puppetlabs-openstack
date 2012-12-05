@@ -121,6 +121,7 @@ class openstack::controller (
   $rabbit_user             = 'nova',
   $rabbit_virtual_host     = '/',
   $manage_rabbit_service   = true,
+  $rabbit_env_config       = 'UNSET',
   # Horizon
   $horizon                 = true,
   $cache_server_ip         = '127.0.0.1',
@@ -276,6 +277,7 @@ class openstack::controller (
     rabbit_password         => $rabbit_password,
     rabbit_virtual_host     => $rabbit_virtual_host,
     manage_rabbit_service   => $manage_rabbit_service,
+    rabbit_env_config       => $rabbit_env_config,
     # Glance
     glance_api_servers      => $glance_api_servers,
     # VNC
