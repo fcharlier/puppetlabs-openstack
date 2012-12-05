@@ -24,6 +24,12 @@ class openstack::swift::storage-node (
         require      => Class['swift'],
       }
     }
+    'xfs': {
+      swift::storage::xfs { $storage_devices:
+        mnt_base_dir => $storage_mnt_base_dir,
+        require      => Class['swift'],
+      }
+    }
   }
 
   # install all swift storage servers together
