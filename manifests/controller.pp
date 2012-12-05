@@ -102,6 +102,7 @@ class openstack::controller (
   $glance_db_user          = 'glance',
   $glance_db_dbname        = 'glance',
   $glance_api_servers      = undef,
+  $glance_storage_backend  = 'file',
   # Nova
   $nova_db_user            = 'nova',
   $nova_db_dbname          = 'nova',
@@ -229,7 +230,9 @@ class openstack::controller (
     glance_db_dbname          => $glance_db_dbname,
     glance_db_password        => $glance_db_password,
     glance_user_password      => $glance_user_password,
+    keystone_host             => $internal_address_real,
     enabled                   => $enabled,
+    backend                   => $glance_storage_backend, 
   }
 
   ######## BEGIN NOVA ###########

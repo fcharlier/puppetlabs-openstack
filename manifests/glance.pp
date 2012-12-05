@@ -14,7 +14,7 @@
 # [glance_user_password] Password for glance auth user. Required.
 # [glance_db_password] Password for glance DB. Required.
 # [keystone_host] Host whre keystone is running. Optional. Defaults to '127.0.0.1'
-# [auth_uri] URI used for auth. Optional. Defaults to "http://${keystone_host}:5000/"
+# [auth_uri] URI used for auth. Optional. Defaults to "http://${keystone_host}:5000/v2.0/"
 # [db_type] Type of sql databse to use. Optional. Defaults to 'mysql'
 # [glance_db_user] Name of glance DB user. Optional. Defaults to 'glance'
 # [glance_db_dbname] Name of glance DB. Optional. Defaults to 'glance'
@@ -35,13 +35,20 @@ class openstack::glance (
   $glance_user_password,
   $glance_db_password,
   $keystone_host        = '127.0.0.1',
-  $auth_uri             = "http://127.0.0.1:5000/",
+  $auth_uri             = false,
   $db_type              = 'mysql',
   $glance_db_user       = 'glance',
   $glance_db_dbname     = 'glance',
   $verbose              = 'False',
-  $enabled              = true
+  $enabled              = true,
+  $backend              = 'file'
 ) {
+
+  if $auth_uri {
+    $auth_uri_real = $auth_uri
+  } else {
+    $auth_uri_real = "http://${keystone_host}:5000/v2.0/"
+  }
 
   # Configure the db string
   case $db_type {
@@ -78,7 +85,20 @@ class openstack::glance (
     enabled           => $enabled,
   }
 
-  # Configure file storage backend
-  class { 'glance::backend::file': }
+  case $backend {
+    'file' : {
+      # Configure file storage backend
+      class { 'glance::backend::file': }
+    }
+    'swift' : {
+      # Configure swift storage backend
+      class { 'glance::backend::swift':
+        swift_store_user => 'services:glance',
+        swift_store_key  => $glance_user_password,
+        swift_store_auth_address => $auth_uri_real,
+        swift_store_create_container_on_put => 'True',
+      }
+    }
+  }
 
 }
