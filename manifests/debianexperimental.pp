@@ -7,31 +7,53 @@ class openstack::debianexperimental () {
     source => 'puppet:///modules/openstack/gplhost-archive-keyring_20100926-1_all.deb',
   }
 
-  package { 'gplhost-archive-keyring':
-    ensure   => installed,
-    provider => 'dpkg',
-    source   => '/tmp/gplhost-keyring.deb',
-    require  => File['/tmp/gplhost-keyring.deb']
+  exec { 'install_gplhost_keyring':
+    command => 'dpkg -i /tmp/gplhost-keyring.deb',
+    require => File['/tmp/gplhost-keyring.deb']
   }
 
   apt::source { 'debian_experimental_gplhost':
     location          => 'http://ftparchive.gplhost.com/debian',
-    release           => 'experimental',
+    release           => 'openstack',
     repos             => 'main',
-    required_packages => 'gplhost-archive-keyring'
+    require           => exec['install_gplhost_keyring']
   }
 
   apt::source { 'debian_experimental':
+    ensure   => absent,
     location => 'http://ftp2.fr.debian.org/debian',
     release  => 'experimental',
     repos    => 'main'
   }
 
+#  apt::pin { 'gplhost':
+#    origin => 'GPLHost',
+#    priority => 990,
+#  }
+   file { '/etc/apt/preferences.d/gplhost_manual.pref':
+     owner => 'root',
+     group => 'root',
+     mode  => '0644',
+     content => '
+# gplhost
+Package: *
+Pin: release o=GPLHost
+Pin-Priority: 1000
+'
+   }
+
+  File['/etc/apt/preferences.d/gplhost_manual.pref'] -> Package<| |>
+
   apt::pin { 'libvirt':
-    release  => 'experimental',
-    priority => 900,
-    package  => '*libvirt*',
-    order    => 99
+    release  => 'unstable',
+    priority => 990,
+    packages  => '*libvirt*',
+  }
+
+  apt::source { 'debian_sid':
+    location => 'http://ftp2.fr.debian.org/debian',
+    release  => 'sid',
+    repos    => 'main'
   }
 
 
