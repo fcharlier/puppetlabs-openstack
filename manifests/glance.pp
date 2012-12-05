@@ -40,7 +40,8 @@ class openstack::glance (
   $glance_db_user       = 'glance',
   $glance_db_dbname     = 'glance',
   $verbose              = 'False',
-  $enabled              = true
+  $enabled              = true,
+  $backend              = 'file'
 ) {
 
   if $auth_uri {
@@ -84,7 +85,20 @@ class openstack::glance (
     enabled           => $enabled,
   }
 
-  # Configure file storage backend
-  class { 'glance::backend::file': }
+  case $backend {
+    'file' : {
+      # Configure file storage backend
+      class { 'glance::backend::file': }
+    }
+    'swift' : {
+      # Configure swift storage backend
+      class { 'glance::backend::swift':
+        swift_store_user => 'services:glance',
+        swift_store_key  => $glance_user_password,
+        swift_store_auth_address => $auth_uri_real,
+        swift_store_create_container_on_put => 'True',
+      }
+    }
+  }
 
 }
