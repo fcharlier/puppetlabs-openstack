@@ -1,5 +1,6 @@
 class openstack::swift::proxy (
   $swift_user_password              = 'swift_pass',
+  $region                           = 'RegionOne',
   $swift_hash_suffix                = 'swift_secret',
   $swift_local_net_ip               = $::ipaddress_eth0,
   $ring_part_power                  = 18,
@@ -64,6 +65,14 @@ class openstack::swift::proxy (
   }
   class { '::swift::proxy::keystone':
     operator_roles => ['admin', 'SwiftOperator'],
+  }
+  class { '::swift::keystone::auth':
+    auth_name => 'swift',
+    password  => $swift_user_password,
+    address   => $swift_local_net_ip,
+    port      => 8080,
+    tenant    => 'services',
+    region    => $region,
   }
   class { '::swift::proxy::authtoken':
     admin_user        => 'swift',
