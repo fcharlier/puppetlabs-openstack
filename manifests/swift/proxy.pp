@@ -3,6 +3,7 @@ class openstack::swift::proxy (
   $region                           = 'RegionOne',
   $swift_hash_suffix                = 'swift_secret',
   $swift_local_net_ip               = $::ipaddress_eth0,
+  $rsync_local_net_ip               = $::ipaddress_eth0,
   $ring_part_power                  = 18,
   $ring_replicas                    = 3,
   $ring_min_part_hours              = 1,
@@ -21,7 +22,7 @@ class openstack::swift::proxy (
   $memcached                        = true
 ) {
 
-  class { 'swift': 
+  class { 'swift':
     swift_hash_suffix => $swift_hash_suffix,
     package_ensure    => $package_ensure,
   }
@@ -98,12 +99,12 @@ class openstack::swift::proxy (
 
   # sets up an rsync db that can be used to sync the ring DB
   class { 'swift::ringserver':
-    local_net_ip => $swift_local_net_ip,
+    local_net_ip => $rsync_local_net_ip,
   }
 
   # exports rsync gets that can be used to sync the ring files
   @@swift::ringsync { ['account', 'object', 'container']:
-   ring_server => $swift_local_net_ip
+   ring_server => $rsync_local_net_ip
   }
 
   # deploy a script that can be used for testing
