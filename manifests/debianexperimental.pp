@@ -19,6 +19,13 @@ class openstack::debianexperimental () {
     require  => exec['install_gplhost_keyring']
   }
 
+  apt::source { 'wheezy_backports_gplhost':
+    location => 'http://ftparchive.gplhost.com/debian',
+    release  => 'wheezy-backports',
+    repos    => 'main',
+    require  => exec['install_gplhost_keyring']
+  }
+
   apt::source { 'debian_experimental':
     ensure   => absent,
     location => 'http://ftp2.fr.debian.org/debian',
