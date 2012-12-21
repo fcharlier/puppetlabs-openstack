@@ -9,10 +9,10 @@ class openstack::debianexperimental () {
 
   exec { 'install_gplhost_keyring':
     command => 'dpkg -i /tmp/gplhost-keyring.deb',
-    require => File['/tmp/gplhost-keyring.deb']
+    require => File['/tmp/gplhost-keyring.deb'],
   }
 
-  apt::source { 'debian_experimental_gplhost':
+  apt::source { 'openstack_gplhost':
     location => 'http://ftparchive.gplhost.com/debian',
     release  => 'openstack',
     repos    => 'main',
@@ -26,13 +26,7 @@ class openstack::debianexperimental () {
     require  => exec['install_gplhost_keyring']
   }
 
-  apt::source { 'debian_experimental':
-    ensure   => absent,
-    location => 'http://ftp2.fr.debian.org/debian',
-    release  => 'experimental',
-    repos    => 'main'
-  }
-
+# Does not behave as expected, creating the file without apt::pin
 #  apt::pin { 'gplhost':
 #    origin => 'GPLHost',
 #    priority => 990,
@@ -50,18 +44,5 @@ Pin-Priority: 1000
   }
 
   File['/etc/apt/preferences.d/gplhost_manual.pref'] -> Package<| |>
-
-  apt::pin { 'libvirt':
-    release  => 'unstable',
-    priority => 990,
-    packages => '*libvirt*',
-  }
-
-  apt::source { 'debian_sid':
-    location => 'http://ftp2.fr.debian.org/debian',
-    release  => 'sid',
-    repos    => 'main'
-  }
-
 
 }
