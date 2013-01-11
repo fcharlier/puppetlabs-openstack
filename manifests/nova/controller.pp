@@ -56,6 +56,7 @@ class openstack::nova::controller (
   $rabbit_virtual_host       = '/',
   $manage_rabbit_service     = true,
   $rabbit_env_config         = 'UNSET',
+  $rabbit_connection         = 'UNSET',
   # Database
   $db_type                   = 'mysql',
   # Glance
@@ -83,7 +84,11 @@ class openstack::nova::controller (
 
   $sql_connection    = $nova_db
   $glance_connection = $real_glance_api_servers
-  $rabbit_connection = $internal_address
+  if ($rabbit_connection == 'UNSET') {
+    $rabbit_connection_real = $internal_address
+  } else {
+    $rabbit_connection_real = $rabbit_connection
+  }
 
   # Install / configure rabbitmq
   class { 'nova::rabbitmq':
@@ -104,7 +109,7 @@ class openstack::nova::controller (
     image_service        => 'nova.image.glance.GlanceImageService',
     glance_api_servers   => $glance_connection,
     verbose              => $verbose,
-    rabbit_host          => $rabbit_connection,
+    rabbit_host          => $rabbit_connection_real,
   }
 
   # Configure nova-api
